@@ -61,4 +61,4 @@ async def ee1(inr: disnake.CommandInteraction):
  inr.send('gowthr was here...', reference=inr.message, allowed_mentions=disnake.AllowedMentions.none())
 
 
-bot.run('MTE4OTE5MzE2MTIyMjkyNjQyNg.GFtgo4.9-V1XcfAyjIUWXxi7On0Hx7H18zlnksNZm9ZzY')
+bot.run('[BOT TOKEN HERE]')
