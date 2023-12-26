@@ -20,10 +20,9 @@ async def on_ready():
     logging.info(f'Bot ready! Logged in as {bot.user.name}.')
 
 
-@bot.slash_command(name='help',  description='Command usage and explanation'
-async def help_slash)
-async def help(inr):
-    #nothing
+@bot.slash_command(name='help',  description='Command usage and explanation')
+async def help_slash(inr: disnake.ApplicationCommandInteraction):
+    await inr.response.send_message(f'~~~')
     logging.info('nothign')
 
 
