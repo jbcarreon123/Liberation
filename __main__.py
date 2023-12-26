@@ -25,7 +25,7 @@ async def on_ready():
 @bot.slash_command(name='help',  description='Command usage and explanation')
 async def help_slash(inr: disnake.ApplicationCommandInteraction):
     await inr.response.send_message(f'~~~')
-    logging.info('nothign')
+    logging.info('nothing')
 
 
 @bot.slash_command(name='ping', description='Ping')
@@ -59,6 +59,11 @@ async def create_party(inr: disnake.ApplicationCommandInteraction, display_name:
 @bot.command(name='gowthr')
 async def ee1(inr: disnake.CommandInteraction):
  inr.send('gowthr was here...', reference=inr.message, allowed_mentions=disnake.AllowedMentions.none())
+
+ @bot.command(name='krunged')
+ async def ee2(inr: disnake.CommandInteraction):
+     inr.send('GET A JUICY CHICKEN SANDWICH TODAY 50% OFF* OF FREE SO WE PAY YOU!\n\n*Deal is banned in every '
+              'continent*', reference=inr.message, allowed_mentions=disnake.AllowedMentions.none())
 
 
 bot.run('[BOT TOKEN HERE]')
