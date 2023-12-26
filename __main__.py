@@ -19,7 +19,7 @@ database.create_table("config", ["guildId", "categoryId"])
 async def on_ready():
     logging.info(f'Bot ready! Logged in as {bot.user.name}.')
 
-
+#TODO Write help command
 @bot.slash_command(name='help',  description='Command usage and explanation')
 async def help_slash(inr: disnake.ApplicationCommandInteraction):
     await inr.response.send_message(f'~~~')
