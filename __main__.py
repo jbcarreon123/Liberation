@@ -1,3 +1,5 @@
+# TODO: do anything
+
 import disnake
 import logging
 from sqlite4 import SQLite4
@@ -49,6 +51,7 @@ async def create_party(inr: disnake.ApplicationCommandInteraction, display_name:
     await inr.response.send_message('<:pending:1189216631268843530> Creating a party VC...\n<:desc:1189216629519826975> Administrators or people that have the `ADMINISTRATOR` permission can see party VCs, regardless of its privacy level!')
     categories = database.select("config", columns=['guildId', 'categoryId'], condition=f'guildId = {inr.guild_id}')
     category = categories[0][1]
+    await inr.guild.create_voice_channel(name=display_name + ' (Party)', category=inr.guild.get_channel(category))
     await inr.guild.create_voice_channel(name=display_name + ' (Party)', category=inr.guild.get_channel(category))
     await inr.edit_original_message('<:done:1189216626604769320> Done!')
 
