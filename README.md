@@ -3,4 +3,4 @@
 We created Liberation because paywalls **SUCK** the *real* payment is the fun and the knowledge we gathered along the way!
 
 ## Command usage and explanation:
-- /help \-Displays command usage and explanation
+- /help \- Displays command usage and explanation
