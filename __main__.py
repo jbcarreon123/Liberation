@@ -58,12 +58,12 @@ async def create_party(inr: disnake.ApplicationCommandInteraction, display_name:
 
 @bot.command(name='gowthr')
 async def ee1(inr: disnake.CommandInteraction):
- inr.send('gowthr was here...', reference=inr.message, allowed_mentions=disnake.AllowedMentions.none())
+ await inr.send('gowthr was here...', reference=inr.message, allowed_mentions=disnake.AllowedMentions.none())
 
- @bot.command(name='krunged')
- async def ee2(inr: disnake.CommandInteraction):
-     inr.send('GET A JUICY CHICKEN SANDWICH TODAY 50% OFF* OF FREE SO WE PAY YOU!\n\n*Deal is banned in every '
-              'continent*', reference=inr.message, allowed_mentions=disnake.AllowedMentions.none())
+
+@bot.command(name='krunged')
+async def ee2(inr: disnake.CommandInteraction):
+ await inr.send('GET A JUICY CHICKEN SANDWICH TODAY 50% OFF IF YOU USE CODE \"KRUNGED!\" \n\n*Deal has expired*', reference=inr.message, allowed_mentions=disnake.AllowedMentions.none())
 
 
 bot.run('[BOT TOKEN HERE]')
