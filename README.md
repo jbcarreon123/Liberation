@@ -6,6 +6,4 @@ We created Liberation because paywalls **SUCK** the *real* payment is the fun an
 - /help \- Displays command usage and explanation
 
 ### What is Liberation?
-Liberation is a Discord bot that creates temporary voice channels with a customizable control panel that allows you to configure a voice channel as if it were your own!
-This can be useful if you're in a public server and you want to make a voice channel for you and your friends without having to worry about strangers or trolls joining and you won't be cluttering up your DMs with various group chats! 
-Not to mention that group chats can only hold 10 people but this temporary voice channel solution holds a nearly limitless amount!
+Liberation is an innovative Discord bot designed to effortlessly craft temporary voice channels, accompanied by a customizable control panel that grants you the power to personalize your own gathering space! This functionality becomes invaluable within public servers, where creating a private enclave for you and your friends becomes hassle-free, shielding you from unwanted interlopers such as strangers or trolls. Bid farewell to cluttered DMs hosting multiple group chats, as Liberation offers a seamless alternative. Moreover, while traditional group chats limit participation to 10 individuals, this dynamic solution for temporary voice channels facilitates hosting gatherings of almost limitless size!
