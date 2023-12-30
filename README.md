@@ -1,5 +1,7 @@
-# Liberation
-Temporary Voice channels - made easier
+<p align="center">
+  <img src="https://github.com/liberation-dev/images/blob/main/Liberation-Banner.png?raw=true" />
+  <br/>Party voice channels, <b>made easier</b>
+</p>
 
 ## Command usage and explanation(*Coming Soon*):
 - /help \- Displays command usage and explanation
