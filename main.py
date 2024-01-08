@@ -9,6 +9,7 @@ import logging
 from sqlite4 import SQLite4
 from disnake.ext import commands
 from config import Config
+from icons import Icons
 
 
 def load_config():
@@ -58,6 +59,33 @@ def if_party_exists(*, user: int = None, party: str = None):
         return pa is not None
 
 
+def get_icons():
+    file_path = os.path.dirname(os.path.realpath(__file__)) + "\\icons.yml"
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            icon_data = yaml.safe_load(file)
+        return Icons(**icon_data)
+    else:
+        logging.warning('Cannot find icons.yml. Will not put emojis in buttons.')
+        return None
+
+
+async def create_party_config_msg(channel: disnake.VoiceChannel, inr: disnake.ApplicationCommandInteraction):
+    embed = disnake.Embed(title=f'Control Panel for #{channel.name}')
+    icons = get_icons()
+    compo = [
+        disnake.ui.Button(label="{status}".format(status="Unlocked" if channel.permissions_for(channel.guild.default_role).connect == True else "Locked"),
+                          emoji="{emoji}".format(emoji="" if icons is None else "<:{icon}:{id}>".format(icon=icons.unlock['name'] if channel.permissions_for(channel.guild.default_role).connect == True else icons.lock['name'],
+                                                                                                        id=icons.unlock['id'] if channel.permissions_for(channel.guild.default_role).connect == True else icons.lock['id'])),
+                          custom_id="liberation.party.toggle-lock", style=disnake.ButtonStyle.danger),
+        disnake.ui.Button(label="{visible}".format(visible="Public" if channel.permissions_for(channel.guild.default_role).view_channel == True else "Private"),
+                          emoji="{emoji}".format(emoji="" if icons is None else "<:{icon}:{id}>".format(icon=icons.public['name'] if channel.permissions_for(channel.guild.default_role).connect == True else icons.private['name'],
+                                                                                                        id=icons.public['id'] if channel.permissions_for(channel.guild.default_role).connect == True else icons.private['id'])),
+                          custom_id="liberation.party.toggle-visibility", style=disnake.ButtonStyle.danger)
+    ]
+    await inr.send(embed=embed, components=compo)
+
+
 @bot.event
 async def on_ready():
     for x in range(0, bot.shard_count - 1):
@@ -101,8 +129,8 @@ async def help_slash(inr: disnake.ApplicationCommandInteraction):
 
 
 @bot.slash_command(name='test', description='placeholder')
-async def test(inr: disnake.ApplicationCommandInteraction):
-    logging.info('test')
+async def test(inr: disnake.ApplicationCommandInteraction, vc: disnake.VoiceChannel):
+    await create_party_config_msg(vc, inr)
 
 
 @bot.slash_command(name='ping', description='Ping')
@@ -179,6 +207,12 @@ async def ee(inr: disnake.ApplicationCommandInteraction, code: str):
     else:
         await inr.response.send_message('null')
         await inr.delete_original_message()
+
+    
+@bot.slash_command(name='change-pronouns', description='internal use only')
+async def chprn(inr: disnake.AppCommandInteraction, pronoun: str):
+    await bot.http.edit_my_member(inr.guild_id, pronouns=pronoun)
+    await inr.response.send_message('done')
 
 
 bot.run(config.Token)

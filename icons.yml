@@ -1,0 +1,51 @@
+lock:
+  name: lock
+  id: 1192812754520768554
+unlock:
+  name: lock_open
+  id: 1192812751567978616
+public:
+  name: public
+  id: 1192812741627490334
+private:
+  name: private
+  id: 1192812745217802300
+add_members:
+  name: ""
+  id: 0
+set_user_limit:
+  name: ""
+  id: 0
+set_permissions:
+  name: ""
+  id: 0
+set_vc_name:
+  name: ""
+  id: 0
+set_slowmode:
+  name: ""
+  id: 0
+set_voice_region:
+  name: ""
+  id: 0
+set_bitrate:
+  name: ""
+  id: 0
+disband:
+  name: ""
+  id: 0
+change_who_can_see:
+  name: ""
+  id: 0
+change_who_can_make:
+  name: ""
+  id: 0
+allowed:
+  name: ""
+  id: 0
+inherit:
+  name: ""
+  id: 0
+disallowed:
+  name: ""
+  id: 0
