@@ -11,29 +11,29 @@ private:
   name: private
   id: 1192812745217802300
 add_members:
-  name: ""
-  id: 0
+  name: group_add
+  id: 1192812759029653665
 set_user_limit:
-  name: ""
-  id: 0
+  name: group
+  id: 1192812760732549161
 set_permissions:
-  name: ""
-  id: 0
+  name: permissions
+  id: 1192812746950070332
 set_vc_name:
-  name: ""
-  id: 0
+  name: edit
+  id: 1192812763110703228
 set_slowmode:
-  name: ""
-  id: 0
+  name: slowmode
+  id: 1192812736892117022
 set_voice_region:
-  name: ""
-  id: 0
+  name: region
+  id: 1192812739878473859
 set_bitrate:
-  name: ""
-  id: 0
+  name: bitrate
+  id: 1192812774066229298
 disband:
-  name: ""
-  id: 0
+  name: delete
+  id: 1192812768441679905
 change_who_can_see:
   name: ""
   id: 0

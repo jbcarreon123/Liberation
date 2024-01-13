@@ -1,4 +1,22 @@
-# TODO: do anything
+'''
+    Liberation - Party voice channels, made easier
+    by jbcarreon123 and Gowthr
+    Copyright (C) 2024
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'''
+
 import os
 import uuid
 from time import sleep
@@ -10,6 +28,7 @@ from sqlite4 import SQLite4
 from disnake.ext import commands
 from config import Config
 from icons import Icons
+from message import Message
 
 
 def load_config():
@@ -35,7 +54,8 @@ def find_easter_egg_by_code(target_code):
 
 
 config = load_config()
-bot = commands.AutoShardedBot(command_prefix=config.Prefix, intents=disnake.Intents.default() | disnake.Intents.message_content)
+bot = commands.AutoShardedBot(command_prefix=config.Prefix,
+                              intents=disnake.Intents.default() | disnake.Intents.message_content)
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s: %(message)s')
@@ -53,10 +73,10 @@ def get_random_str():
 def if_party_exists(*, user: int = None, party: str = None):
     if user is None:
         pa = database.select("party", ["partyId"], condition=f'partyId = {party}')
-        return pa is not None
+        return pa is not None and len(pa) is not 0
     else:
         pa = database.select("party", ["ownerId"], condition=f'ownerId = {user}')
-        return pa is not None
+        return pa is not None and len(pa) is not 0
 
 
 def get_icons():
@@ -70,26 +90,83 @@ def get_icons():
         return None
 
 
-async def create_party_config_msg(channel: disnake.VoiceChannel, inr: disnake.ApplicationCommandInteraction):
+def create_guild_config_msg(guild: disnake.Guild) -> Message:
+    embed = disnake.Embed(title=f'Guild Configuration')
+    icons = get_icons()
+    compo = [
+    ]
+    return Message(embed=embed, buttons=compo)
+
+
+def create_party_config_msg(channel: disnake.VoiceChannel) -> Message:
     embed = disnake.Embed(title=f'Control Panel for #{channel.name}')
     icons = get_icons()
     compo = [
-        disnake.ui.Button(label="{status}".format(status="Unlocked" if channel.permissions_for(channel.guild.default_role).connect == True else "Locked"),
-                          emoji="{emoji}".format(emoji="" if icons is None else "<:{icon}:{id}>".format(icon=icons.unlock['name'] if channel.permissions_for(channel.guild.default_role).connect == True else icons.lock['name'],
-                                                                                                        id=icons.unlock['id'] if channel.permissions_for(channel.guild.default_role).connect == True else icons.lock['id'])),
-                          custom_id="liberation.party.toggle-lock", style=disnake.ButtonStyle.danger),
-        disnake.ui.Button(label="{visible}".format(visible="Public" if channel.permissions_for(channel.guild.default_role).view_channel == True else "Private"),
-                          emoji="{emoji}".format(emoji="" if icons is None else "<:{icon}:{id}>".format(icon=icons.public['name'] if channel.permissions_for(channel.guild.default_role).connect == True else icons.private['name'],
-                                                                                                        id=icons.public['id'] if channel.permissions_for(channel.guild.default_role).connect == True else icons.private['id'])),
-                          custom_id="liberation.party.toggle-visibility", style=disnake.ButtonStyle.danger)
+        [
+            disnake.ui.Button(label="{status}".format(
+                status="Unlocked" if channel.permissions_for(channel.guild.default_role).connect == True else "Locked"),
+                              emoji="{emoji}".format(emoji="" if icons is None else "<:{icon}:{id}>".format(
+                                  icon=icons.unlock['name'] if channel.permissions_for(
+                                      channel.guild.default_role).connect is True else icons.lock['name'],
+                                  id=icons.unlock['id'] if channel.permissions_for(
+                                      channel.guild.default_role).connect is True else icons.lock['id'])),
+                              custom_id="liberation.party.toggle_lock", style=disnake.ButtonStyle.danger),
+            disnake.ui.Button(label="{visible}".format(visible="Public" if channel.permissions_for(
+                channel.guild.default_role).view_channel == True else "Private"),
+                              emoji="{emoji}".format(emoji="" if icons is None else "<:{icon}:{id}>".format(
+                                  icon=icons.public['name'] if channel.permissions_for(
+                                      channel.guild.default_role).connect is True else icons.private['name'],
+                                  id=icons.public['id'] if channel.permissions_for(
+                                      channel.guild.default_role).connect is True else icons.private['id'])),
+                              custom_id="liberation.party.toggle_visibility", style=disnake.ButtonStyle.danger),
+            disnake.ui.Button(label="Add Members", emoji=f"<:{icons.add_members['name']}:{icons.add_members['id']}>",
+                              custom_id="liberation.party.add_members",
+                              style=disnake.ButtonStyle.success,
+                              disabled=(channel.permissions_for(channel.guild.default_role).connect is True))
+        ],
+        [
+            disnake.ui.Button(label="Set User Limit",
+                              emoji=f"<:{icons.set_user_limit['name']}:{icons.set_user_limit['id']}>",
+                              custom_id="liberation.party.set_user_limit",
+                              style=disnake.ButtonStyle.blurple),
+            disnake.ui.Button(label="Set Permissions",
+                              emoji=f"<:{icons.set_permissions['name']}:{icons.set_permissions['id']}>",
+                              custom_id="liberation.party.set_permissions",
+                              style=disnake.ButtonStyle.blurple),
+            disnake.ui.Button(label="Set Party VC Name",
+                              emoji=f"<:{icons.set_vc_name['name']}:{icons.set_vc_name['id']}>",
+                              custom_id="liberation.party.set_vc_name",
+                              style=disnake.ButtonStyle.blurple)
+        ],
+        [
+            disnake.ui.Button(label="Set Slowmode",
+                              emoji=f"<:{icons.set_slowmode['name']}:{icons.set_slowmode['id']}>",
+                              custom_id="liberation.party.set_slowmode",
+                              style=disnake.ButtonStyle.blurple),
+            disnake.ui.Button(label="Set Voice Region",
+                              emoji=f"<:{icons.set_voice_region['name']}:{icons.set_voice_region['id']}>",
+                              custom_id="liberation.party.set_voice_region",
+                              style=disnake.ButtonStyle.blurple),
+            disnake.ui.Button(label="Set Bitrate",
+                              emoji=f"<:{icons.set_user_limit['name']}:{icons.set_user_limit['id']}>",
+                              custom_id="liberation.party.set_bitrate",
+                              style=disnake.ButtonStyle.blurple)
+        ],
+        [
+            disnake.ui.Button(label="Disband Party",
+                              emoji=f"<:{icons.disband['name']}:{icons.disband['id']}>",
+                              custom_id="liberation.party.disband",
+                              style=disnake.ButtonStyle.danger)
+        ]
     ]
-    await inr.send(embed=embed, components=compo)
+    return Message(embed=embed, buttons=compo)
 
 
 @bot.event
 async def on_ready():
     for x in range(0, bot.shard_count - 1):
-        p = disnake.Activity(name=config.Presence['Name'], state=config.Presence['State'] + f'\nShard ID: {x}', type=config.Presence['Type'])
+        p = disnake.Activity(name=config.Presence['Name'], state=config.Presence['State'] + f'\nShard ID: {x}',
+                             type=config.Presence['Type'])
         await bot.change_presence(status=disnake.Status.online, activity=p, shard_id=x)
     logging.info(f'Bot ready! Logged in as {bot.user.name}.')
 
@@ -117,6 +194,7 @@ async def on_voice_state_update(member: disnake.Member, before: disnake.VoiceSta
         database.insert("party", {"guildId": member.guild.id, "partyId": rnd, "ownerId": member.id, "channelId": vc.id})
         await vc.send(f"{member.mention} Here you go! Party ID is {rnd}!")
         await member.move_to(vc, reason='Created party VC')
+        await vc.send(embed=msg.embed, components=msg.buttons)
 
 
 # TODO: Write help command
@@ -130,14 +208,16 @@ async def help_slash(inr: disnake.ApplicationCommandInteraction):
 
 @bot.slash_command(name='test', description='placeholder')
 async def test(inr: disnake.ApplicationCommandInteraction, vc: disnake.VoiceChannel):
-    await create_party_config_msg(vc, inr)
+    msg = create_party_config_msg(vc)
+    await inr.response.send_message(embed=msg.embed, components=msg.buttons)
 
 
 @bot.slash_command(name='ping', description='Ping')
 async def ping_slash(inr: disnake.ApplicationCommandInteraction):
     embed = disnake.Embed(title="Ping")
-    embed.add_field('Shard Latency', f'{(bot.get_shard(inr.guild.shard_id).latency*1000).__round__(2)}ms', inline=True)
-    embed.add_field('API Latency', f'{(bot.latency*1000).__round__(2)}ms', inline=True)
+    embed.add_field('Shard Latency', f'{(bot.get_shard(inr.guild.shard_id).latency * 1000).__round__(2)}ms',
+                    inline=True)
+    embed.add_field('API Latency', f'{(bot.latency * 1000).__round__(2)}ms', inline=True)
     embed.set_footer(text=f'Shard {inr.guild.shard_id}/{bot.shard_count} • {len(bot.guilds)} guilds')
     await inr.response.send_message(embed=embed)
 
@@ -162,7 +242,7 @@ async def shards_prefix(inr: disnake.ApplicationCommandInteraction):
     embed.add_field(name="Status", value=shard_status, inline=True)
     embed.add_field(name="Latency", value=shard_ping, inline=True)
     await inr.response.send_message(embed=embed, reference=inr.message,
-                   allowed_mentions=disnake.AllowedMentions.none())
+                                    allowed_mentions=disnake.AllowedMentions.none())
 
 
 @bot.slash_command(name='configure', description='Configure the bot')
@@ -172,8 +252,12 @@ async def conf_slash(inr: disnake.ApplicationCommandInteraction, category: disna
     await inr.response.send_message('<:done:1189216626604769320> Done and Done!')
 
 
-# TODO: Create control panel text channel
-@bot.slash_command(name='create', description='Create a party VC')
+@bot.slash_command(name='party', description='Party Slash Commands')
+async def party(inr: disnake.ApplicationCommandInteraction):
+    pass
+
+
+@party.sub_command(name='create', description='Create a party VC')
 async def create_party(inr: disnake.ApplicationCommandInteraction, display_name: str):
     await inr.response.send_message(
         '<:pending:1189216631268843530> Creating a party VC...\n<:desc:1189216629519826975> Administrators or people '
@@ -182,9 +266,23 @@ async def create_party(inr: disnake.ApplicationCommandInteraction, display_name:
     category = categories[0][1]
     vc = await inr.guild.create_voice_channel(name=display_name + ' (Party)', category=inr.guild.get_channel(category))
     rnd = get_random_str()
-    await database.insert("party", {"guildId": inr.guild_id, "partyId": rnd, "ownerId": inr.user.id,
+    database.insert("party", {"guildId": inr.guild_id, "partyId": rnd, "ownerId": inr.user.id,
                                     "channelId": vc.id})
     await inr.edit_original_message(f'<:done:1189216626604769320> Done! Your Party ID is {rnd}!')
+    msg = create_party_config_msg(vc)
+    await vc.send(embed=msg.embed, components=msg.buttons)
+    
+    
+@party.sub_command(name='disband', description='Disband a party VC')
+async def disband_party(inr: disnake.ApplicationCommandInteraction, party_id: str):
+    if (if_party_exists(party=party_id)):
+        pa = database.select("party", ["partyId", "channelId"], condition=f'partyId = {party_id}')
+        ch = pa[0][1]
+        await inr.guild.get_channel(ch).delete(reason="Party disbanded.")
+        database.delete("party", condition=f'partyId = {party_id}')
+        await inr.response.send_message(f"Party `{party_id}` disbanded successfully.")
+    else:
+        await inr.response.send_message(f"Cannot find `{party_id}` on the database!")        
 
 
 @bot.slash_command(name='about', description='About Liberation')
@@ -194,7 +292,9 @@ async def about(inr: disnake.ApplicationCommandInteraction):
                          '/Liberation_BannerU.png')
     embed = disnake.Embed(title='Liberation', description='Liberation is a bot that you can use to effortlessly '
                                                           'create temporary VCs.')
-    embed.add_field('The Libera-Team', '**[jbcarreon123](https://github.com/jbcarreon123)** *(Lead Developer)*\n**[Gowthr](https://github.com/gowthr)** *(Lead Developer & Designer)*\n**[MooreGaming1324](https://github.com/MooreGaming1324)** *(Administrator)*', inline=True)
+    embed.add_field('The Libera-Team',
+                    '**[jbcarreon123](https://github.com/jbcarreon123)** *(Lead Developer)*\n**[Gowthr](https://github.com/gowthr)** *(Lead Developer & Designer)*\n**[MooreGaming1324](https://github.com/MooreGaming1324)** *(Administrator)*',
+                    inline=True)
     embed.add_field('Links', '[GitHub Repo](https://github.com/liberation-dev/Liberation)\n', inline=True)
     await inr.response.send_message(embeds=[libera, embed])
 
@@ -208,7 +308,7 @@ async def ee(inr: disnake.ApplicationCommandInteraction, code: str):
         await inr.response.send_message('null')
         await inr.delete_original_message()
 
-    
+
 @bot.slash_command(name='change-pronouns', description='internal use only')
 async def chprn(inr: disnake.AppCommandInteraction, pronoun: str):
     await bot.http.edit_my_member(inr.guild_id, pronouns=pronoun)
