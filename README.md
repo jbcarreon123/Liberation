@@ -1,3 +1,5 @@
+# Discontinued. We've switched to a new programming language. See [liberation-dev/Liberation](https://github.com/liberation-dev/Liberation) for the updated bot code.
+
 <p align="center">
   <img src="https://github.com/liberation-dev/images/blob/main/Liberation-Banner.png?raw=true" />
   <br/>Party voice channels, <b>made easier</b>
